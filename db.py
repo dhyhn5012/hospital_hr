@@ -177,3 +177,30 @@ def dept_overlap_count(dept, start_date, end_date):
     count = cur.fetchone()[0]
     conn.close()
     return count
+# Thêm vào db.py
+
+def get_user_by_id(user_id):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    row = cur.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def create_leave_request(employee_id, start_date, end_date, reason, attachment_path=None):
+    """
+    Tạo đơn mới (status = 'pending'), trả về request_id.
+    start_date, end_date: 'YYYY-MM-DD' (string)
+    """
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("""
+      INSERT INTO leave_requests (employee_id, start_date, end_date, reason, attachment_path, status, created_at)
+      VALUES (?, ?, ?, ?, ?, 'pending', datetime('now'))
+    """, (employee_id, start_date, end_date, reason, attachment_path))
+    conn.commit()
+    req_id = cur.lastrowid
+    conn.close()
+    # Ghi audit
+    log_audit(action='create_leave', user_id=employee_id, obj_type='leave_request', obj_id=req_id, note="Created by employee")
+    return req_id

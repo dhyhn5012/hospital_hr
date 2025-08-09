@@ -87,6 +87,16 @@ if page == "Báo cáo / Xuất":
         df = pd.DataFrame(get_requests_for_dept(dept, start_date=start.isoformat(), end_date=end.isoformat()))
         csv = df.to_csv(index=False).encode('utf-8')
         st.download_button("Download CSV", data=csv, file_name=f"report_{dept}_{start}_{end}.csv", mime="text/csv")
+from io import BytesIO
+
+if st.button("Tải báo cáo Excel"):
+    df = pd.DataFrame(get_requests_for_dept(dept, start_date=start.isoformat(), end_date=end.isoformat()))
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='report')
+    st.download_button("Download Excel", data=buffer.getvalue(),
+                       file_name=f"report_{dept}_{start}_{end}.xlsx",
+                       mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 # --- Audit logs (HR/manager) ---
 if page == "Audit logs":
