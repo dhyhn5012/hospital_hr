@@ -35,7 +35,7 @@ if 'user' not in st.session_state:
         user = verify_user(username, password)
         if user:
             st.session_state['user'] = user
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.sidebar.error("Sai username hoặc mật khẩu")
     st.stop()
@@ -137,7 +137,7 @@ if page == "Duyệt đơn (manager)":
                             st.info("Email thông báo đã gửi tới: " + emp['email'])
                         else:
                             st.warning("Không gửi được email (kiểm tra cấu hình SMTP).")
-                    st.experimental_rerun()
+                    st.rerun()
 
             with col2:
                 reason_reject = st.text_area("Lý do từ chối (sẽ gửi cho nhân viên):")
@@ -154,7 +154,7 @@ if page == "Duyệt đơn (manager)":
                             st.info("Email thông báo đã gửi tới: " + emp['email'])
                         else:
                             st.warning("Không gửi được email (kiểm tra cấu hình SMTP).")
-                    st.experimental_rerun()
+                    st.rerun()
 
 # --- Báo cáo / Xuất ---
 if page == "Báo cáo / Xuất":
