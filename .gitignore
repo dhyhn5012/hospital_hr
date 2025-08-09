@@ -1,0 +1,6 @@
+/uploads/
+/data/*.db
+/.venv
+.env
+.secrets.toml
+__pycache__/
