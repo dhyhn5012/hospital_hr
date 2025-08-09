@@ -1,16 +1,22 @@
-# auth.py (rút gọn)
+# auth.py
 import bcrypt
-from db import get_conn
+from db import get_user_by_username
+
+def hash_password(plain):
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
 
 def verify_user(username, password):
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("SELECT id, name, role, dept, password_hash FROM users WHERE username=?", (username,))
-    row = cur.fetchone()
-    conn.close()
+    row = get_user_by_username(username)
     if not row:
         return None
-    pwd_hash = row[4].encode()
-    if bcrypt.checkpw(password.encode(), pwd_hash):
-        return {"id": row[0], "username": username, "name": row[1], "role": row[2], "dept": row[3]}
+    stored = row.get('password_hash')
+    if stored is None:
+        return None
+    # stored string -> bytes
+    try:
+        stored_b = stored.encode()
+    except Exception:
+        stored_b = stored
+    if bcrypt.checkpw(password.encode(), stored_b):
+        return {"id": row['id'], "username": row['username'], "name": row['name'], "role": row['role'], "dept": row['dept'], "email": row.get('email')}
     return None
