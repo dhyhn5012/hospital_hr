@@ -204,3 +204,18 @@ def create_leave_request(employee_id, start_date, end_date, reason, attachment_p
     # Ghi audit
     log_audit(action='create_leave', user_id=employee_id, obj_type='leave_request', obj_id=req_id, note="Created by employee")
     return req_id
+
+
+import bcrypt
+import sqlite3
+
+def create_user(name, username, password, role, dept, email=None):
+    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    conn = sqlite3.connect("data/hr.db")
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO users (name, username, password, role, dept, email)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (name, username, hashed_pw, role, dept, email))
+    conn.commit()
+    conn.close()
