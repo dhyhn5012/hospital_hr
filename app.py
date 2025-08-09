@@ -62,3 +62,11 @@ elif choice == "Quản lý phép ốm":
         df.to_excel("leave_requests.xlsx", index=False)
 
         st.success("✅ Đã gửi đơn thành công!")
+
+if 'user' not in st.session_state:
+    username = st.sidebar.text_input("Username")
+    password = st.sidebar.text_input("Password", type="password")
+    if st.sidebar.button("Login"):
+        user = verify_user(username, password)
+        if user:
+            st.session_state['user'] = user
